@@ -1,0 +1,21 @@
+version: '3'
+services:
+    api_middleman:
+        build: .
+        networks:
+            api_network:
+        ports:
+          - "8000"
+        environment:
+          - API_URL=$API_CONTAINER_NAME_PORT
+          - VIRTUAL_PORT=8000
+          - VIRTUAL_HOST=${THIS_API_HOSTNAME}
+          - LETSENCRYPT_HOST=${THIS_API_HOSTNAME}
+        command: /start-reload.sh
+        volumes:
+            - ./app:/app/app
+
+networks:
+    api_network:
+        external:
+            name: viewer_default
