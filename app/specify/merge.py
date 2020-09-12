@@ -41,8 +41,6 @@ def merge(a, b):
         except:
             y = {None: None}
 
-        nai = 0
-        bai = 0
         xk = list(x)[0]
         yk = list(y)[0]
         xv = x[xk]
@@ -79,8 +77,6 @@ def merge(a, b):
                 winb = [yk]
                 # and store key's values
                 bk = {xk: xv, yk: yv}
-                nai = ai
-                bai = bi
                 ai += 1
                 bi += 1
         # there was a conflict in the past
