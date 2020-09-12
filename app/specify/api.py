@@ -235,8 +235,6 @@ class SpecifyApi():
             **params
         })
 
-        print(self._query_builder(queryTerms, ignore_missing=ignore_missing))
-
         resp = await self.api.get('/select?' + q, content_type='text/plain')
         
         for i in resp['response']['docs']:
