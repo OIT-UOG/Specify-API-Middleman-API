@@ -19,4 +19,4 @@ services:
 networks:
     api_network:
         external:
-            name: viewer_default
+            name: ${API_CONTAINER_NETWORK_NAME}
