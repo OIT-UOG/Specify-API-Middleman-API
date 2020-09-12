@@ -148,6 +148,6 @@ async def query(api: Api = Depends(shared_api),
     return await api.query(qt, c, sort, asc, page)
 
 
-@app.get("/fastapi_version", tags=['misc'])
+@app.get("/fastapi_version", tags=['misc'], include_in_schema=False)
 async def version():
     return fversion
