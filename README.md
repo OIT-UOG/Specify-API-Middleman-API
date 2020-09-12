@@ -52,5 +52,5 @@ Basic usage is as follows:
     | sorted values | \| | `[1,2,10]` | `[10,11,12]` | `['100','20','a']` |
     | adjusted values | \| | `['1','2','10']` | `['10','11','12']` | `['100','20','a']` |  
     **resulting order**: 1 10 100 11 12 2 10 20 a
-3. Not all collections have the same fields. As such, searching by them may have not easily definable behavior. It should be pretty smooth after 77d88a627d3f9c26785dcc4a0a03edc9590c8f08 , but searching for "no value" is still not possible.
+3. Not all collections have the same fields. As such, searching by them may have not easily definable behavior. It should be pretty smooth after [`77d88a6`](https://github.com/OIT-UOG/Specify-API-Middleman-API/commit/77d88a627d3f9c26785dcc4a0a03edc9590c8f08) , but searching for "no value" is still not possible.
     
