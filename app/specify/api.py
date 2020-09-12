@@ -164,7 +164,7 @@ class SpecifyApi():
             field = self.column_model._resolve_solrname_from_colname_or_solrname(terms[0])
         except Exception as e:
             if ignore_missing:
-                ret = f'{terms[0]}:'
+                ret = '*:' # f'{terms[0]}:'
             else:
                 raise e
         else:
@@ -234,6 +234,8 @@ class SpecifyApi():
             'q': self._query_builder(queryTerms, ignore_missing=ignore_missing),
             **params
         })
+
+        print(self._query_builder(queryTerms, ignore_missing=ignore_missing))
 
         resp = await self.api.get('/select?' + q, content_type='text/plain')
         
