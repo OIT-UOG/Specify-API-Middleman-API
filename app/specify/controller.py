@@ -125,9 +125,6 @@ class CombinedApi():
             async with session.get(self.base_url) as resp:
                 text = await resp.text()
         return re.findall(COLLECTION_PATTERN, text)
-    
-    async def _combine_models(self, api_models):
-        heir = Column.SOLRTYPE_HEIRARCHY
 
     def query_cache_keys(self, queryTerms, collections, sort, asc):
         return str([
