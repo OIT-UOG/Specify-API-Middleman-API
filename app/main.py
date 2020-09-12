@@ -1,14 +1,15 @@
 from fastapi import FastAPI, Depends, Query, HTTPException, __version__ as fversion
 import asyncio
 import aiohttp
+from threading import Thread
 import os
 import json
 import uvicorn
-from typing import List
+from typing import List, Dict
 
 from .specify import CombinedApi as Api
 from .specify import ColumnModel, CombinedSettingsModel
-from pydantic import Field
+from pydantic import Field, BaseModel
 
 API_URL = f"http://{ '/'.join(s.strip('/') for s in [os.getenv('API_URL'), 'specify-solr']) }"
 
@@ -28,6 +29,30 @@ tags = [
     }
 ]
 
+api = Api(API_URL)
+
+def start_loop(loop, api):
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(api.start())
+
+def prestart():
+    loop = asyncio.new_event_loop()
+    t = Thread(target=start_loop, args=(loop, api))
+    t.start()
+    t.join()
+
+prestart()
+
+DocItemModel = api.DocItemModel
+
+
+class SearchResponseModel(BaseModel):
+    docs: List[DocItemModel] = []
+    facet_counts: Dict[str, int]
+    total: int
+    last_page: int
+
+
 app = FastAPI(
     title="Specify Middleman API",
     description="provides a simplified, unified view into the Specify SOLR collections",
@@ -35,7 +60,6 @@ app = FastAPI(
     openapi_tags=tags,
 )
 
-api = Api(API_URL)
 
 async def shared_api():
     if not api.ready:
@@ -55,7 +79,7 @@ async def model(api: Api = Depends(shared_api)):
     """returns the header meta-information for each attribute returned from item from the /search endpoint"""
     return await api.model()
 
-@app.get("/search", tags=["search"])
+@app.get("/search", tags=["search"], response_model=SearchResponseModel)
 async def query(api: Api = Depends(shared_api), 
                 q: str=Query("[\"*\"]",
                     description="lisp-y \"json\" string following the rules described in this endpoint's description",

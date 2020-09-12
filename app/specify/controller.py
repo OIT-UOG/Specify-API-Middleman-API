@@ -4,7 +4,7 @@ import re
 from fastapi import HTTPException
 from cachetools import TTLCache
 from .api import SpecifyApi, Api, Column, SearchSyntax, QueryCache, FieldModel, ApiValidationError, deephash
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, create_model
 from typing import Optional, List, Dict
 from pathlib import Path
 import random
@@ -52,6 +52,13 @@ class CombinedSettingsModel(BaseModel):
     collections: Dict[str, Settings]
 
 
+class ImageResponseModel(BaseModel):
+    id: int
+    name: str
+    title: str
+    coll: str
+
+
 class CombinedApi():
     COLLECTION_SOLRNAME = FieldModel.COLLECTION_SOLRNAME
     DEFAULT_QUERY_ROWS = 50
@@ -80,6 +87,16 @@ class CombinedApi():
         # need to assign these atomically... does gunicorn disregard all this?
         self._collections = collections
         self.short_names = {c.replace('vouchers', ''): c for c in collections}
+        
+        item_model = {
+            c.get('solrname'): (c.SOLRTYPE_TRANSFORMS[c.get('solrtype')], None)
+            for c in self._model.columns
+        }
+        item_model['img'] = (List[ImageResponseModel], [])
+        self.DocItemModel = create_model('DocItemModel',
+            **item_model
+        )
+        
         self.ready = True
     
     async def list_collections(self):

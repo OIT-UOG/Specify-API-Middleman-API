@@ -17,6 +17,10 @@ This is not a 100% smooth merge. Please take into account the [considerations](#
 3. fill out an `.env` file following the `sample.env` file as an example
 4. `docker-compose up -d`
 
+\* **Attention**: The response model for which the api responses are returned are used for validation and docs and are generated on API startup. 
+This means that if the SOLR apis are altered/updated, this api should also be restarted. 
+Consider turning this into a service on the SOLR api docker-compose with a depends_on relationship to auto-restart if the SOLR api is restarted
+
 ## Deployment
 
 For fastest speeds, this should be deployed on the same server as the SOLR apis.  
