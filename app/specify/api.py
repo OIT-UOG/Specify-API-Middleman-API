@@ -150,7 +150,8 @@ class SpecifyApi():
         if len(terms) == 1:
             return f'({terms[0]})'
 
-        q = self._query_builder
+        def q(t): 
+            return self._query_builder(t, ignore_missing)
 
         combs = {
             self.SYNTAX.OR: " OR ",
