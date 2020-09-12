@@ -44,13 +44,13 @@ async def shared_api():
     return api
 
 
-@app.get("/settings", tags=['setup'], response_model=CombinedSettingsModel)
+@app.get("/settings", tags=['setup'], response_model=CombinedSettingsModel, response_model_exclude_unset=True)
 async def settings(api: Api = Depends(shared_api)):
     """returns query syntax to use in the /search endpoint  
     also returns settings used to configure the individual collections, which includes their respective image store urls"""
     return await api.settings()
 
-@app.get("/model", tags=['setup'], response_model=List[ColumnModel])
+@app.get("/model", tags=['setup'], response_model=List[ColumnModel], response_model_exclude_unset=True)
 async def model(api: Api = Depends(shared_api)):
     """returns the header meta-information for each attribute returned from item from the /search endpoint"""
     return await api.model()
