@@ -29,7 +29,7 @@ Basic usage is as follows:
 
 1. Grab meta information to setup your retrieval  
     * `/settings` will give you 
-      * the available collections
+      * the available collections to be used in `/search`'s `colls` and `sort` parameter
       * needed enums for `/search`'s `queryTerm` parameter
       * image base URLs to be used to complete the img urls given by `/search`
     * `/model` will give you 
