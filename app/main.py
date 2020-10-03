@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Query, HTTPException, __version__ as fversion
+from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import aiohttp
 from threading import Thread
@@ -12,6 +13,10 @@ from .specify import ColumnModel, CombinedSettingsModel
 from pydantic import Field, BaseModel
 
 API_URL = f"http://{ '/'.join(s.strip('/') for s in [os.getenv('API_URL'), 'specify-solr']) }"
+
+origins = [
+    os.getenv('APP_URL')
+]
 
 tags = [
     {
@@ -30,6 +35,12 @@ tags = [
 ]
 
 api = Api(API_URL)
+
+app.add_middleware{
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_headers=['*']
+}
 
 def start_loop(loop, api):
     asyncio.set_event_loop(loop)
