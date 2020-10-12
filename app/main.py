@@ -12,10 +12,18 @@ from .specify import CombinedApi as Api
 from .specify import ColumnModel, CombinedSettingsModel
 from pydantic import Field, BaseModel
 
-API_URL = f"http://{ '/'.join(s.strip('/') for s in [os.getenv('API_URL'), 'specify-solr']) }"
+API_URL = '/'.join(s.strip('/') for s in [os.getenv('API_URL'), 'specify-solr'])
+
+if not API_URL.startswith('http'):
+    API_URL = 'https://' + API_URL
+
+app_url = os.getenv('APP_URL')
+
+if not app_url.startswith('http'):
+    app_url = 'https://' + app_url
 
 origins = [
-    os.getenv('APP_URL')
+    app_url
 ]
 
 tags = [
