@@ -36,11 +36,6 @@ tags = [
 
 api = Api(API_URL)
 
-app.add_middleware{
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_headers=['*']
-}
 
 def start_loop(loop, api):
     asyncio.set_event_loop(loop)
@@ -71,6 +66,11 @@ app = FastAPI(
     openapi_tags=tags,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_headers=['*']
+)
 
 async def shared_api():
     if not api.ready:
