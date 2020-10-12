@@ -14,9 +14,6 @@ from pydantic import Field, BaseModel
 
 API_URL = '/'.join(s.strip('/') for s in [os.getenv('API_URL'), 'specify-solr'])
 
-if not API_URL.startswith('http'):
-    API_URL = 'https://' + API_URL
-
 app_url = os.getenv('APP_URL')
 
 if not app_url.startswith('http'):
