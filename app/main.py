@@ -74,6 +74,9 @@ app = FastAPI(
     openapi_tags=tags,
 )
 
+
+print('='*20 + f'\n= Allowing origins: {origins}\n' + ('='*20))
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
