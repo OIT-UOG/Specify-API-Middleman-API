@@ -130,8 +130,11 @@ class SpecifyApi():
         if settings != self.settings_json:
             self.settings_json = settings
             # self.stale = True
-        return {**{'shortName': self.shortName}, **self.settings_json[0]}
-    
+        return {**{
+                      'shortName': self.shortName,
+                      'longName': self.collection,
+                  }, **self.settings_json[0]}
+                
     async def _model(self):
         model = await self.api.get('/resources/config/fldmodel.json')
         if model != self.model_json:
