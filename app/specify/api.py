@@ -545,7 +545,7 @@ class ColumnModel(BaseModel):
     treeid: Optional[str] = None
     treerank: Optional[int] = None
     colidx: Optional[int] = None
-    advancedsearch: Optional[str] = None
+    advancedsearch: Optional[bool] = None
     displaycolidx: Optional[int] = None
 
 
