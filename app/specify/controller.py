@@ -187,7 +187,10 @@ class CombinedApi():
                         to_compare.append((c, buffers[c][cursors[c][1]]))
                     except IndexError:
                         return
-                chosen = compare(to_compare, key=lambda i: i[1][field])
+                try:
+                    chosen = compare(to_compare, key=lambda i: i[1][field])
+                except KeyError:
+                    chosen = compare(to_compare, key=lambda i: i[1]['spid'])
                 cursors[chosen[0]][1] += 1
                 yield chosen[1]
         return _field_drip
