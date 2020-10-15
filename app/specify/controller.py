@@ -190,7 +190,14 @@ class CombinedApi():
                 try:
                     chosen = compare(to_compare, key=lambda i: i[1][field])
                 except KeyError:
-                    chosen = compare(to_compare, key=lambda i: i[1]['spid'])
+                    if asc:
+                        to_compare = [i for i in to_compare if field not in i[1]]
+                    else:
+                        to_compare = [i for i in to_compare if field in i[1]]
+                    if len(to_compare) > 1:
+                        chosen = compare(to_compare, key=lambda i: i[1]['spid'])
+                    else:
+                        chosen = to_compare[0]
                 cursors[chosen[0]][1] += 1
                 yield chosen[1]
         return _field_drip
