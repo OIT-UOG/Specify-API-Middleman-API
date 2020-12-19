@@ -40,15 +40,16 @@ tags = [
 ]
 
 api = Api(API_URL)
+dump_api = Api(API_URL)
 
 
-def start_loop(loop, api):
+def start_loop(loop, api, dump_api):
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(api.start())
+    loop.run_until_complete(asyncio.gather(api.start(), dump_api.start(None)))
 
 def prestart():
     loop = asyncio.new_event_loop()
-    t = Thread(target=start_loop, args=(loop, api))
+    t = Thread(target=start_loop, args=(loop, api, dump_api))
     t.start()
     t.join()
 
@@ -86,6 +87,12 @@ async def shared_api():
         return api
     return api
 
+
+async def shared_dump_api():
+    if not dump_api.ready:
+        await dump_api.start(None)
+        return dump_api
+    return dump_api
 
 @app.get("/settings", tags=['setup'], response_model=CombinedSettingsModel, response_model_exclude_unset=True)
 async def settings(api: Api = Depends(shared_api)):
@@ -165,6 +172,31 @@ async def query(api: Api = Depends(shared_api),
                 raise HTTPException(status_code=422, detail=f'{k} is not a collection')
         
     return await api.query(qt, c, sort, asc, page)
+
+
+@app.get("/searchdump", tags=["search"], response_model=SearchResponseModel)
+async def querydump(api: Api = Depends(shared_dump_api),
+                q: str = Query("[\"*\"]"),
+                colls: str = Query('', regex=r"((^|,)(\w*?))*$"),
+                sort: str = Query(None),
+                asc: bool = Query(False),
+                ):
+    """
+    same as search endpoint but returns all results for faster csv building.
+
+    TODO: possibly just use solr's csv output, but how would we clean it up/combine it?.. don't?
+    """
+    qt = json.loads(q)
+    if not colls:
+        c = [*api._collections]
+    else:
+        c = [api.short_names.get(k, k) for k in colls.split(',')]
+        for k in c:
+            if k not in api._collections:
+                raise HTTPException(
+                    status_code=422, detail=f'{k} is not a collection')
+
+    return await api.query(qt, c, sort, asc, 0)
 
 
 @app.get("/fastapi_version", tags=['misc'], include_in_schema=False)

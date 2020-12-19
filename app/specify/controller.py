@@ -13,7 +13,8 @@ from operator import iconcat
 import logging
 
 COLLECTION_PATTERN = re.compile(r'<a href="(.*?)"')
-
+# is actually the number used by the original Specify
+SOME_BIG_NUMBER = 99999999
 
 class Settings(BaseModel):
     shortName: str
@@ -68,14 +69,23 @@ class CombinedApi():
         self.ready = False
         self._model = None
         self._new_cache()
+        self.query_rows = self.DEFAULT_QUERY_ROWS
     
     def _new_cache(self):
         # not too efficient cache
         self.cache = QueryCache()
 
-    async def start(self):
+    async def start(self, query_rows_override=False):
+        """query_rows_override: 
+                pass in a positive integer to override default query rows
+                pass as None to query all rows"""
+        if query_rows_override is None:
+            self.query_rows = SOME_BIG_NUMBER
+        elif query_rows_override > 0:
+            self.query_rows = int(query_rows_override)
         collections = await self._list_collections()
-        _apis = {c: SpecifyApi(self.base_url, c, query_rows=self.DEFAULT_QUERY_ROWS) for c in collections}
+        _apis = {c: SpecifyApi(
+            self.base_url, c, query_rows=self.query_rows) for c in collections}
         apis = list(_apis.values())
         for api in apis:
             await api.start()
@@ -330,7 +340,7 @@ class CombinedApi():
                 'ending_cursors': cursors,
                 'facet_counts': geos,
                 'total': total,
-                'last_page': -(-total // self.DEFAULT_QUERY_ROWS) - 1,
+                'last_page': -(-total // self.query_rows) - 1,
                 'last_trickle': []
             }
 
@@ -355,11 +365,11 @@ class CombinedApi():
 
             # add to cache_dict
             pages = [
-                docs[i:i + self.DEFAULT_QUERY_ROWS]
-                for i in range(0, len(docs), self.DEFAULT_QUERY_ROWS)
+                docs[i:i + self.query_rows]
+                for i in range(0, len(docs), self.query_rows)
             ]
 
-            if pages and len(pages[-1]) < self.DEFAULT_QUERY_ROWS:
+            if pages and len(pages[-1]) < self.query_rows:
                 docs = pages.pop()
             else:
                 docs = []
