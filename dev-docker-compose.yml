@@ -12,6 +12,7 @@ services:
           - VIRTUAL_PORT=8000
           - VIRTUAL_HOST=${THIS_API_HOSTNAME}
           - LETSENCRYPT_HOST=${THIS_API_HOSTNAME}
+          - HARDCODE_HTTPS=false
         command: /start-reload.sh
         volumes:
             - ./app:/app/app
