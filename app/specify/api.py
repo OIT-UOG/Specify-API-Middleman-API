@@ -12,7 +12,7 @@ from cachetools import TTLCache
 from contextlib import contextmanager
 from .merge import merge
 
-HARDCODE_HTTPS = os.environ('HARDCODE_HTTPS').lower() == 'true'
+HARDCODE_HTTPS = os.getenv('HARDCODE_HTTPS').lower() == 'true'
 
 def deephash(li):
     a = sorted(li, key=lambda i: str(i))
