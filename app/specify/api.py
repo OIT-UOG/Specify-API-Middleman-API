@@ -142,6 +142,7 @@ class SpecifyApi():
                 base_url = base_url.replace('http://', 'https://')
             if ':8080' in base_url:
                 base_url = base_url.replace(':8080', '')
+            settings['imageBaseUrl'] = base_url
         return settings
                 
     async def _model(self):
