@@ -3,6 +3,7 @@ import orjson
 from fastapi import HTTPException
 import orjson as json
 import re
+import os
 import urllib
 from pydantic import BaseModel, Field
 from typing import Optional, List
@@ -11,6 +12,7 @@ from cachetools import TTLCache
 from contextlib import contextmanager
 from .merge import merge
 
+HARDCODE_HTTPS = os.environ['HARDCODE_HTTPS'].lower() == 'true'
 
 def deephash(li):
     a = sorted(li, key=lambda i: str(i))
@@ -130,10 +132,17 @@ class SpecifyApi():
         if settings != self.settings_json:
             self.settings_json = settings
             # self.stale = True
-        return {**{
+        settings = {**{
                       'shortName': self.shortName,
                       'longName': self.collection,
                   }, **self.settings_json[0]}
+        base_url = settings['imageBaseUrl']
+        if HARDCODE_HTTPS:
+            if 'http://' in base_url:
+                base_url = base_url.replace('http://', 'https://')
+            if ':8080' in base_url:
+                base_url = base_url.replace(':8080', '')
+        return settings
                 
     async def _model(self):
         model = await self.api.get('/resources/config/fldmodel.json')
